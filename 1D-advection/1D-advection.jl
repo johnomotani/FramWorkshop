@@ -99,8 +99,11 @@ function simulate_advection(v, d_t, n_grid)
             # Flux leaving in cell through right boundary
             flux_right = d_t * v * f[i_x,i_t-1]
 
-            # Total f after timestep in this cell
-            f[i_x,i_t] = f[i_x,i_t-1] + (flux_left - flux_right) / d_x
+            # Total amout of stuff after timestep in this cell
+            cell_total = d_x * f[i_x,i_t-1] + flux_left - flux_right
+
+            # New density in this cell
+            f[i_x,i_t] = cell_total / d_x
         end
     end
 
