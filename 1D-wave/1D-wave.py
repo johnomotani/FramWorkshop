@@ -297,7 +297,7 @@ def simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, times
 
     return time, grid, p, v
 
-def animate_results(time, grid, d, v, fps=30):
+def animate_results(time, grid, d, v, fps=60):
     timestep_size = time[1] - time[0]
     steps_per_output = max(int(1 / (timestep_size * fps)), 1)
     block = amp.blocks.Line(grid, d[::steps_per_output,:])
