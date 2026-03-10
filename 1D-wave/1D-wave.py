@@ -134,9 +134,12 @@ def simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gr
     #
     # Add some small modifications to a bell curve to make sure the initial profile
     # is exactly zero at the boundaries.
-    #d[0,:] = np.exp(-(grid - L/4)**2 * 16**2) - np.exp(-(0.0 - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) * grid / L
-    #d[0,:] = np.sin(2 * np.pi * grid / L)
-    d[0,:] = np.sin(np.pi * (grid / L + 0.25))**16
+    def initial_d(x):
+        #return np.exp(-(x - L/4)**2 * 16**2) - np.exp(-(0.0 - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) * x / L
+        #return np.sin(2 * np.pi * x / L)
+        return np.sin(np.pi * (x / L + 0.25))**16
+
+    d[0,:] = initial_d(grid)
 
     # v is chosen to make a right-moving disturbance at the initial time.
     #v[0,:] = -wave_speed * (-2 * (grid - L/4) * 16**2 * np.exp(-(grid - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) / L)
@@ -155,9 +158,11 @@ def simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gr
         # d is moved by the updated v
         d[i_t+1,:] = d[i_t,:] + v[i_t+1,:] * timestep_size
 
+    exact_d = initial_d(grid[None,:] - wave_speed * time[:,None])
+
     print(f"timestep_size={timestep_size}, CFL-limit={grid_spacing/wave_speed}")
 
-    return time, grid, d, v
+    return time, grid, d, v, exact_d
 
 """
 Simulate propagation of a wave in 1d, for example a gas in a pipe.
@@ -297,14 +302,20 @@ def simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, times
 
     return time, grid, p, v
 
-def animate_results(time, grid, d, v, fps=60):
+def animate_results(time, grid, d, v, exact_d=None, fps=60):
     timestep_size = time[1] - time[0]
     steps_per_output = max(int(1 / (timestep_size * fps)), 1)
-    block = amp.blocks.Line(grid, d[::steps_per_output,:])
-    d_max_absolute_value = 1.1 * np.max(np.abs(d[0,:]))
-    plt.ylim(-d_max_absolute_value, d_max_absolute_value)
+    blocks = [amp.blocks.Line(grid, d[::steps_per_output,:], label="d")]
+    if exact_d is not None:
+        blocks.append(amp.blocks.Line(grid, exact_d[::steps_per_output,:], label="exact_d"))
+    d_max = np.max(d[0,:])
+    extra_space = 0.1 * d_max
+    d_max += extra_space
+    d_min = np.min(d[0,:]) - extra_space
+    plt.ylim(d_min, d_max)
+    plt.legend(loc="lower right")
     timeline = amp.Timeline(time[::steps_per_output], fps=fps)
-    anim = amp.Animation([block], timeline)
+    anim = amp.Animation(blocks, timeline)
     anim.controls()
     plt.show()
     return
@@ -313,9 +324,10 @@ def run_and_plot(wave_speed, timestep_size, n_gridpoints):
     # Run the simulation
     #time, grid, d, v = simulate_wave_with_loops(wave_speed, timestep_size, n_gridpoints)
     #time, grid, d, v = simulate_wave_with_array_operations(wave_speed, timestep_size, n_gridpoints)
-    time, grid, d, v = simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gridpoints)
+    time, grid, d, v, exact_d = simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gridpoints)
     #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gridpoints)
     #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, timestep_size, n_gridpoints)
 
     # Make a move of the results
-    animate_results(time, grid, d, v)
+    #animate_results(time, grid, d, v)
+    animate_results(time, grid, d, v, exact_d)
