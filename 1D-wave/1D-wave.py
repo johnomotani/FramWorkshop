@@ -9,10 +9,9 @@ Boundary condition is that there is no displacement at the end points of the gri
 
 Uses for loops for all operations.
 """
-def simulate_wave_with_loops(timestep_size, n_gridpoints):
+def simulate_wave_with_loops(wave_speed, timestep_size, n_gridpoints):
     L = 1.0
     total_time = 100.0
-    wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
     time = np.fromiter((i_t * timestep_size for i_t in range(n_t)), float)
@@ -66,10 +65,9 @@ Boundary condition is that there is no displacement at the end points of the gri
 
 Uses numpy array operations for efficiency.
 """
-def simulate_wave_with_array_operations(timestep_size, n_gridpoints):
+def simulate_wave_with_array_operations(wave_speed, timestep_size, n_gridpoints):
     L = 1.0
     total_time = 100.0
-    wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
     time = np.fromiter((i_t * timestep_size for i_t in range(n_t)), float)
@@ -116,10 +114,9 @@ def simulate_wave_with_array_operations(timestep_size, n_gridpoints):
 
     return time, grid, d, v
 
-def simulate_wave_with_array_operations_periodic(timestep_size, n_gridpoints):
+def simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gridpoints):
     L = 1.0
     total_time = 100.0
-    wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
     time = np.fromiter((i_t * timestep_size for i_t in range(n_t)), float)
@@ -169,10 +166,9 @@ Boundary condition is that there is no displacement at the end points of the gri
 
 Uses numpy array operations for efficiency.
 """
-def simulate_gas_wave_with_array_operations(timestep_size, n_gridpoints):
+def simulate_gas_wave_with_array_operations(wave_speed, timestep_size, n_gridpoints):
     L = 1.0
     total_time = 10.0
-    wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
     time = np.fromiter((i_t * timestep_size for i_t in range(n_t)), float)
@@ -219,10 +215,9 @@ def simulate_gas_wave_with_array_operations(timestep_size, n_gridpoints):
 
     return time, grid, d, v
 
-def simulate_gas_wave_with_array_operations_periodic(timestep_size, n_gridpoints):
+def simulate_gas_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gridpoints):
     L = 1.0
     total_time = 10.0
-    wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
     time = np.fromiter((i_t * timestep_size for i_t in range(n_t)), float)
@@ -261,10 +256,9 @@ def simulate_gas_wave_with_array_operations_periodic(timestep_size, n_gridpoints
 
     return time, grid, p, v
 
-def simulate_gas_wave_with_array_operations_periodic_staggered(timestep_size, n_gridpoints):
+def simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, timestep_size, n_gridpoints):
     L = 1.0
     total_time = 10.0
-    wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
     time = np.fromiter((i_t * timestep_size for i_t in range(n_t)), float)
@@ -315,13 +309,13 @@ def animate_results(time, grid, d, v, fps=30):
     plt.show()
     return
 
-def run_and_plot(timestep_size, n_gridpoints):
+def run_and_plot(wave_speed, timestep_size, n_gridpoints):
     # Run the simulation
-    #time, grid, d, v = simulate_wave_with_loops(timestep_size, n_gridpoints)
-    #time, grid, d, v = simulate_wave_with_array_operations(timestep_size, n_gridpoints)
-    time, grid, d, v = simulate_wave_with_array_operations_periodic(timestep_size, n_gridpoints)
-    #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic(timestep_size, n_gridpoints)
-    #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic_staggered(timestep_size, n_gridpoints)
+    #time, grid, d, v = simulate_wave_with_loops(wave_speed, timestep_size, n_gridpoints)
+    #time, grid, d, v = simulate_wave_with_array_operations(wave_speed, timestep_size, n_gridpoints)
+    time, grid, d, v = simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gridpoints)
+    #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gridpoints)
+    #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, timestep_size, n_gridpoints)
 
     # Make a move of the results
     animate_results(time, grid, d, v)
