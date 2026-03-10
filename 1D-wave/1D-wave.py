@@ -11,7 +11,7 @@ Uses for loops for all operations.
 """
 def simulate_wave_with_loops(timestep_size, n_gridpoints):
     L = 1.0
-    total_time = 10.0
+    total_time = 100.0
     wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
@@ -46,13 +46,14 @@ def simulate_wave_with_loops(timestep_size, n_gridpoints):
         # Note we do not update the first and last grid points as these are fixed to
         # 0.0.
         for i in range(1,n_gridpoints-1):
-            # d is moved by the current v
-            d[i_t+1,i] = d[i_t,i] + v[i_t,i] * timestep_size
-
             # v is changed by forces from the neighbouring grid points
             displacement_left = d[i_t,i-1] - d[i_t,i]
             displacement_right = d[i_t,i+1] - d[i_t,i]
             v[i_t+1,i] = v[i_t,i] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
+
+        for i in range(1,n_gridpoints-1):
+            # d is moved by the current v
+            d[i_t+1,i] = d[i_t,i] + v[i_t+1,i] * timestep_size
 
     print(f"timestep_size={timestep_size}, CFL-limit={grid_spacing/wave_speed}")
 
@@ -67,7 +68,7 @@ Uses numpy array operations for efficiency.
 """
 def simulate_wave_with_array_operations(timestep_size, n_gridpoints):
     L = 1.0
-    total_time = 10.0
+    total_time = 100.0
     wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
@@ -99,17 +100,17 @@ def simulate_wave_with_array_operations(timestep_size, n_gridpoints):
 
     # Step through all time points
     for i_t in range(0, n_t - 1):
-        print(time[i_t])
+        #print(time[i_t])
         # Note we do not update the first and last grid points as these are fixed to
         # 0.0.
-
-        # d is moved by the current v
-        d[i_t+1,1:-1] = d[i_t,1:-1] + v[i_t,1:-1] * timestep_size
 
         # v is changed by forces from the neighbouring grid points
         displacement_left = d[i_t,:-2] - d[i_t,1:-1]
         displacement_right = d[i_t,2:] - d[i_t,1:-1]
         v[i_t+1,1:-1] = v[i_t,1:-1] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
+
+        # d is moved by the updated v
+        d[i_t+1,1:-1] = d[i_t,1:-1] + v[i_t+1,1:-1] * timestep_size
 
     print(f"timestep_size={timestep_size}, CFL-limit={grid_spacing/wave_speed}")
 
@@ -117,7 +118,7 @@ def simulate_wave_with_array_operations(timestep_size, n_gridpoints):
 
 def simulate_wave_with_array_operations_periodic(timestep_size, n_gridpoints):
     L = 1.0
-    total_time = 10.0
+    total_time = 100.0
     wave_speed = 1.0
 
     n_t = int(total_time / timestep_size)
@@ -137,23 +138,25 @@ def simulate_wave_with_array_operations_periodic(timestep_size, n_gridpoints):
     # Add some small modifications to a bell curve to make sure the initial profile
     # is exactly zero at the boundaries.
     #d[0,:] = np.exp(-(grid - L/4)**2 * 16**2) - np.exp(-(0.0 - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) * grid / L
-    d[0,:] = np.sin(2 * np.pi * grid / L)
+    #d[0,:] = np.sin(2 * np.pi * grid / L)
+    d[0,:] = np.sin(np.pi * (grid / L + 0.25))**16
 
     # v is chosen to make a right-moving disturbance at the initial time.
     #v[0,:] = -wave_speed * (-2 * (grid - L/4) * 16**2 * np.exp(-(grid - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) / L)
-    v[0,:] = -wave_speed * 2 * np.pi / L * np.cos(2 * np.pi * grid / L)
+    #v[0,:] = -wave_speed * 2 * np.pi / L * np.cos(2 * np.pi * grid / L)
+    v[0,:] = -16 * wave_speed * np.pi / L * np.cos(np.pi * (grid / L + 0.25)) * np.sin(np.pi * (grid / L + 0.25))**15
 
     # Step through all time points
     for i_t in range(0, n_t - 1):
-        print(time[i_t])
-
-        # d is moved by the current v
-        d[i_t+1,:] = d[i_t,:] + v[i_t,:] * timestep_size
+        #print(time[i_t])
 
         # v is changed by forces from the neighbouring grid points
         displacement_left = np.roll(d[i_t,:], 1) - d[i_t,:]
         displacement_right = np.roll(d[i_t,:], -1) - d[i_t,:]
         v[i_t+1,:] = v[i_t,:] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
+
+        # d is moved by the updated v
+        d[i_t+1,:] = d[i_t,:] + v[i_t+1,:] * timestep_size
 
     print(f"timestep_size={timestep_size}, CFL-limit={grid_spacing/wave_speed}")
 
@@ -316,9 +319,9 @@ def run_and_plot(timestep_size, n_gridpoints):
     # Run the simulation
     #time, grid, d, v = simulate_wave_with_loops(timestep_size, n_gridpoints)
     #time, grid, d, v = simulate_wave_with_array_operations(timestep_size, n_gridpoints)
-    #time, grid, d, v = simulate_wave_with_array_operations_periodic(timestep_size, n_gridpoints)
+    time, grid, d, v = simulate_wave_with_array_operations_periodic(timestep_size, n_gridpoints)
     #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic(timestep_size, n_gridpoints)
-    time, grid, d, v = simulate_gas_wave_with_array_operations_periodic_staggered(timestep_size, n_gridpoints)
+    #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic_staggered(timestep_size, n_gridpoints)
 
     # Make a move of the results
     animate_results(time, grid, d, v)
