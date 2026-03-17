@@ -167,6 +167,7 @@ def simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gr
     return time, grid, d, v, exact_d
 
 def animate_results(time, grid, d, timesteps_per_frame):
+    fig = plt.figure(figsize=(8,6))
     blocks = [amp.blocks.Line(grid, d[::timesteps_per_frame,:], label="d")]
     d_max = np.max(d[::timesteps_per_frame,:])
     extra_space = 0.1 * d_max
@@ -174,7 +175,7 @@ def animate_results(time, grid, d, timesteps_per_frame):
     d_min = np.min(d[::timesteps_per_frame,:]) - extra_space
     plt.ylim(d_min, d_max)
     timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
-    anim = amp.Animation(blocks, timeline)
+    anim = amp.Animation(blocks, timeline, fig=fig)
     anim.controls()
     plt.show()
     return
