@@ -302,7 +302,7 @@ def simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, times
 
     return time, grid, p, v
 
-def animate_results(time, grid, d, v, exact_d=None, fps=60):
+def animate_results(time, grid, d, exact_d=None, fps=60):
     timestep_size = time[1] - time[0]
     steps_per_output = max(int(1 / (timestep_size * fps)), 1)
     blocks = [amp.blocks.Line(grid, d[::steps_per_output,:], label="d")]
@@ -320,6 +320,37 @@ def animate_results(time, grid, d, v, exact_d=None, fps=60):
     plt.show()
     return
 
+def animate_results_with_error(time, grid, d, exact_d, fps=60):
+    timestep_size = time[1] - time[0]
+    steps_per_output = max(int(1 / (timestep_size * fps)), 1)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16,6))
+
+    ax1.set_title("d")
+    ax2.set_title("error = d - exact_d")
+
+    blocks = [amp.blocks.Line(grid, d[::steps_per_output,:], label="d", ax=ax1)]
+    blocks.append(amp.blocks.Line(grid, exact_d[::steps_per_output,:], label="exact_d", ax=ax1))
+
+    error = d[::steps_per_output,:] - exact_d[::steps_per_output,:]
+    blocks.append(amp.blocks.Line(grid, error, label="error", ax=ax2))
+
+    d_max = np.max(d[::steps_per_output,:])
+    extra_space = 0.1 * d_max
+    d_max += extra_space
+    d_min = np.min(d[::steps_per_output,:]) - extra_space
+    ax1.set_ylim(d_min, d_max)
+
+    error_max = 1.1 * np.max(np.abs(error))
+    ax2.set_ylim(-error_max, error_max)
+
+    plt.legend(loc="lower right")
+    timeline = amp.Timeline(time[::steps_per_output], fps=fps)
+    anim = amp.Animation(blocks, timeline)
+    anim.controls()
+    plt.show()
+    return
+
 def run_and_plot(wave_speed, timestep_size, n_gridpoints):
     # Run the simulation
     #time, grid, d, v = simulate_wave_with_loops(wave_speed, timestep_size, n_gridpoints)
@@ -329,5 +360,6 @@ def run_and_plot(wave_speed, timestep_size, n_gridpoints):
     #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, timestep_size, n_gridpoints)
 
     # Make a move of the results
-    #animate_results(time, grid, d, v)
-    animate_results(time, grid, d, v, exact_d)
+    #animate_results(time, grid, d)
+    #animate_results(time, grid, d, exact_d)
+    animate_results_with_error(time, grid, d, exact_d)
