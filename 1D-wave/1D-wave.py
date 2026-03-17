@@ -144,7 +144,8 @@ def simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gr
     # v is chosen to make a right-moving disturbance at the initial time.
     #v[0,:] = -wave_speed * (-2 * (grid - L/4) * 16**2 * np.exp(-(grid - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) / L)
     #v[0,:] = -wave_speed * 2 * np.pi / L * np.cos(2 * np.pi * grid / L)
-    v[0,:] = -16 * wave_speed * np.pi / L * np.cos(np.pi * (grid / L + 0.25)) * np.sin(np.pi * (grid / L + 0.25))**15
+    initial_v_grid = (grid + wave_speed * 0.5 * timestep_size) % L
+    v[0,:] = -16 * wave_speed * np.pi / L * np.cos(np.pi * (initial_v_grid / L + 0.25)) * np.sin(np.pi * (initial_v_grid / L + 0.25))**15
 
     # Step through all time points
     for i_t in range(0, n_t - 1):
