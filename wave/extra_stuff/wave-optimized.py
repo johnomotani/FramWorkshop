@@ -41,9 +41,21 @@ def simulate_wave(wave_speed, timestep_size, n_gridpoints):
     print("Start time loop")
     for i_t in range(0, n_t - 1):
         # v is changed by forces from the neighbouring grid points
-        displacement_left = np.roll(d[i_t,:], 1) - d[i_t,:]
-        displacement_right = np.roll(d[i_t,:], -1) - d[i_t,:]
-        v[i_t+1,:] = v[i_t,:] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
+
+        # At left edge, periodicity means 'left' point is at the other end of the grid.
+        displacement_left = d[i_t,-1] - d[i_t,0]
+        displacement_right = d[i_t,1] - d[i_t,0]
+        v[i_t+1,0] = v[i_t,0] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
+
+        # At right edge, periodicity means 'right' point is at the other end of the grid.
+        displacement_left = d[i_t,-2] - d[i_t,-1]
+        displacement_right = d[i_t,0] - d[i_t,-1]
+        v[i_t+1,-1] = v[i_t,-1] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
+
+        # Update majority of grid with 'array operation'.
+        displacement_left = d[i_t,0:-2] - d[i_t,1:-1]
+        displacement_right = d[i_t,2:] - d[i_t,1:-1]
+        v[i_t+1,1:-1] = v[i_t,1:-1] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
 
         # d is moved by the updated v
         d[i_t+1,:] = d[i_t,:] + v[i_t+1,:] * timestep_size
