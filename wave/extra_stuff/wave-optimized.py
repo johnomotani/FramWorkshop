@@ -40,23 +40,13 @@ def simulate_wave(wave_speed, timestep_size, n_gridpoints):
     # Step through all time points
     print("Start time loop")
     for i_t in range(0, n_t - 1):
-        for i in range(0, n_gridpoints):
-            # v is changed by forces from the neighbouring grid points
-            if i == 0:
-                # Periodicity means 'left' point is at the other end of the grid.
-                displacement_left = d[i_t,-1] - d[i_t,i]
-            else:
-                displacement_left = d[i_t,i-1] - d[i_t,i]
-            if i == n_gridpoints - 1:
-                # Periodicity means 'right' point is at the other end of the grid.
-                displacement_right = d[i_t,0] - d[i_t,i]
-            else:
-                displacement_right = d[i_t,i+1] - d[i_t,i]
-            v[i_t+1,i] = v[i_t,i] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
+        # v is changed by forces from the neighbouring grid points
+        displacement_left = np.roll(d[i_t,:], 1) - d[i_t,:]
+        displacement_right = np.roll(d[i_t,:], -1) - d[i_t,:]
+        v[i_t+1,:] = v[i_t,:] + wave_speed**2 / grid_spacing**2 * (displacement_left + displacement_right) * timestep_size
 
-        for i in range(0, n_gridpoints):
-            # d is moved by the updated v
-            d[i_t+1,i] = d[i_t,i] + v[i_t+1,i] * timestep_size
+        # d is moved by the updated v
+        d[i_t+1,:] = d[i_t,:] + v[i_t+1,:] * timestep_size
 
     print("Calculate exact solution")
     exact_d = initial_d(grid[None,:] - wave_speed * time[:,None])
@@ -114,5 +104,5 @@ def run_and_plot(wave_speed, timestep_size, n_gridpoints, timesteps_per_frame):
     time, grid, d, v, exact_d = simulate_wave(wave_speed, timestep_size, n_gridpoints)
 
     # Make a move of the results
-    animate_results(time, grid, d, timesteps_per_frame)
-    #animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame)
+    #animate_results(time, grid, d, timesteps_per_frame)
+    animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame)
