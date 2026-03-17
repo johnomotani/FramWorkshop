@@ -111,10 +111,14 @@ def animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame):
     plt.show()
     return
 
-def run_and_plot(wave_speed, timestep_size, n_gridpoints, timesteps_per_frame):
-    # Run the simulation
-    time, grid, d, v, exact_d = simulate_wave(wave_speed, timestep_size, n_gridpoints)
+wave_speed = 1.0
+timestep_size = 0.01
+n_gridpoints = 20
+timesteps_per_frame = 1
 
-    # Make a move of the results
-    #animate_results(time, grid, d, timesteps_per_frame)
-    animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame)
+# Run the simulation
+time, grid, d, v, exact_d = simulate_wave(wave_speed, timestep_size, n_gridpoints)
+
+# Make a move of the results
+#animate_results(time, grid, d, timesteps_per_frame)
+animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame)
