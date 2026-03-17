@@ -134,18 +134,19 @@ def simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gr
     #
     # Add some small modifications to a bell curve to make sure the initial profile
     # is exactly zero at the boundaries.
+    peak_sharpness_setting = 16
     def initial_d(x):
-        #return np.exp(-(x - L/4)**2 * 16**2) - np.exp(-(0.0 - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) * x / L
+        #return np.exp(-(x - L/4)**2 * peak_sharpness_setting**2) - np.exp(-(0.0 - L/4)**2 * peak_sharpness_setting**2) - np.exp(-(L - L/4)**2 * peak_sharpness_setting**2) * x / L
         #return np.sin(2 * np.pi * x / L)
-        return np.sin(np.pi * (x / L + 0.25))**16
+        return np.sin(np.pi * (x / L + 0.25))**peak_sharpness_setting
 
     d[0,:] = initial_d(grid)
 
     # v is chosen to make a right-moving disturbance at the initial time.
-    #v[0,:] = -wave_speed * (-2 * (grid - L/4) * 16**2 * np.exp(-(grid - L/4)**2 * 16**2) - np.exp(-(L - L/4)**2 * 16**2) / L)
+    #v[0,:] = -wave_speed * (-2 * (grid - L/4) * peak_sharpness_setting**2 * np.exp(-(grid - L/4)**2 * peak_sharpness_setting**2) - np.exp(-(L - L/4)**2 * peak_sharpness_setting**2) / L)
     #v[0,:] = -wave_speed * 2 * np.pi / L * np.cos(2 * np.pi * grid / L)
     initial_v_grid = (grid + wave_speed * 0.5 * timestep_size) % L
-    v[0,:] = -16 * wave_speed * np.pi / L * np.cos(np.pi * (initial_v_grid / L + 0.25)) * np.sin(np.pi * (initial_v_grid / L + 0.25))**15
+    v[0,:] = -peak_sharpness_setting * wave_speed * np.pi / L * np.cos(np.pi * (initial_v_grid / L + 0.25)) * np.sin(np.pi * (initial_v_grid / L + 0.25))**(peak_sharpness_setting - 1)
 
     # Step through all time points
     for i_t in range(0, n_t - 1):
@@ -165,56 +166,48 @@ def simulate_wave_with_array_operations_periodic(wave_speed, timestep_size, n_gr
 
     return time, grid, d, v, exact_d
 
-def animate_results(time, grid, d, exact_d=None, fps=60):
-    timestep_size = time[1] - time[0]
-    steps_per_output = max(int(1 / (timestep_size * fps)), 1)
-    blocks = [amp.blocks.Line(grid, d[::steps_per_output,:], label="d")]
-    if exact_d is not None:
-        blocks.append(amp.blocks.Line(grid, exact_d[::steps_per_output,:], label="exact_d"))
-    d_max = np.max(d[0,:])
+def animate_results(time, grid, d, timesteps_per_frame):
+    blocks = [amp.blocks.Line(grid, d[::timesteps_per_frame,:], label="d")]
+    d_max = np.max(d[::timesteps_per_frame,:])
     extra_space = 0.1 * d_max
     d_max += extra_space
-    d_min = np.min(d[0,:]) - extra_space
+    d_min = np.min(d[::timesteps_per_frame,:]) - extra_space
     plt.ylim(d_min, d_max)
-    plt.legend(loc="lower right")
-    timeline = amp.Timeline(time[::steps_per_output], fps=fps)
+    timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
     anim = amp.Animation(blocks, timeline)
     anim.controls()
     plt.show()
     return
 
-def animate_results_with_error(time, grid, d, exact_d, fps=60):
-    timestep_size = time[1] - time[0]
-    steps_per_output = max(int(1 / (timestep_size * fps)), 1)
-
+def animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16,6))
 
     ax1.set_title("d")
     ax2.set_title("error = d - exact_d")
 
-    blocks = [amp.blocks.Line(grid, d[::steps_per_output,:], label="d", ax=ax1)]
-    blocks.append(amp.blocks.Line(grid, exact_d[::steps_per_output,:], label="exact_d", ax=ax1))
+    blocks = [amp.blocks.Line(grid, d[::timesteps_per_frame,:], label="d", ax=ax1)]
+    blocks.append(amp.blocks.Line(grid, exact_d[::timesteps_per_frame,:], label="exact_d", ax=ax1))
 
-    error = d[::steps_per_output,:] - exact_d[::steps_per_output,:]
+    error = d[::timesteps_per_frame,:] - exact_d[::timesteps_per_frame,:]
     blocks.append(amp.blocks.Line(grid, error, label="error", ax=ax2))
 
-    d_max = np.max(d[::steps_per_output,:])
+    d_max = np.max(d[::timesteps_per_frame,:])
     extra_space = 0.1 * d_max
     d_max += extra_space
-    d_min = np.min(d[::steps_per_output,:]) - extra_space
+    d_min = np.min(d[::timesteps_per_frame,:]) - extra_space
     ax1.set_ylim(d_min, d_max)
 
     error_max = 1.1 * np.max(np.abs(error))
     ax2.set_ylim(-error_max, error_max)
 
     plt.legend(loc="lower right")
-    timeline = amp.Timeline(time[::steps_per_output], fps=fps)
+    timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
     anim = amp.Animation(blocks, timeline)
     anim.controls()
     plt.show()
     return
 
-def run_and_plot(wave_speed, timestep_size, n_gridpoints):
+def run_and_plot(wave_speed, timestep_size, n_gridpoints, timesteps_per_frame):
     # Run the simulation
     #time, grid, d, v = simulate_wave_with_loops(wave_speed, timestep_size, n_gridpoints)
     #time, grid, d, v = simulate_wave_with_array_operations(wave_speed, timestep_size, n_gridpoints)
@@ -223,6 +216,5 @@ def run_and_plot(wave_speed, timestep_size, n_gridpoints):
     #time, grid, d, v = simulate_gas_wave_with_array_operations_periodic_staggered(wave_speed, timestep_size, n_gridpoints)
 
     # Make a move of the results
-    #animate_results(time, grid, d)
-    #animate_results(time, grid, d, exact_d)
-    animate_results_with_error(time, grid, d, exact_d)
+    animate_results(time, grid, d, timesteps_per_frame)
+    #animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame)
