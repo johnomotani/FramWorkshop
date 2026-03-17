@@ -7,7 +7,7 @@ def simulate_wave_with_loops(wave_speed, timestep_size, n_gridpoints):
     L = 1.0
 
     # Total time for the simulation.
-    total_time = 100.0
+    total_time = 10.0
 
     print("Initialising arrays...")
     # Array with time for each step.
@@ -68,7 +68,7 @@ def simulate_wave_with_array_operations(wave_speed, timestep_size, n_gridpoints)
     L = 1.0
 
     # Total time for the simulation.
-    total_time = 100.0
+    total_time = 10.0
 
     print("Initialising arrays...")
     # Array with time for each step.
