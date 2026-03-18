@@ -5,6 +5,8 @@ from matplotlib import pyplot as plt
 import animatplot as amp
 
 def load_moment_kinetics_output(data_path):
+    print("Load moment_kinetics results.")
+
     with h5py.File(data_path, "r") as dataset:
         time = dataset["dynamic_data/time"][:]
         grid = dataset["coords/z/grid"][:]
@@ -12,24 +14,24 @@ def load_moment_kinetics_output(data_path):
 
     return time, grid, pressure
 
-def animate_results(time, grid, pressure, fps=60):
-    timestep_size = time[1] - time[0]
-    steps_per_output = max(int(1 / (timestep_size * fps)), 1)
-    blocks = [amp.blocks.Line(grid, pressure[::steps_per_output,:], label="pressure")]
+def animate_results(time, grid, pressure, timesteps_per_frame):
+    print("Animate moment_kinetics results.")
+
+    fig = plt.figure(figsize=(8,6))
+    blocks = [amp.blocks.Line(grid, pressure[::timesteps_per_frame,:], label="pressure")]
+    p_max = np.max(pressure[::timesteps_per_frame,:])
+    p_min = np.min(pressure[::timesteps_per_frame,:])
+    extra_space = 0.1 * (p_max - p_min)
+    p_max += extra_space
+    p_min -= extra_space
+    plt.ylim(p_min, p_max)
+    timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
+    anim = amp.Animation(blocks, timeline, fig=fig)
     plt.xlabel("x")
     plt.ylabel("pressure")
-    d_max = np.max(pressure)
-    d_min = np.min(pressure)
-    extra_space = 0.1 * (d_max - d_min)
-    d_max += extra_space
-    d_min -= extra_space
-    plt.ylim(d_min, d_max)
-    plt.legend(loc="lower right")
-    timeline = amp.Timeline(time[::steps_per_output], fps=fps)
-    anim = amp.Animation(blocks, timeline)
     anim.controls()
     plt.show()
     return
 
 time, grid, pressure = load_moment_kinetics_output(sys.argv[1])
-animate_results(time, grid, pressure)
+animate_results(time, grid, pressure, 1)
