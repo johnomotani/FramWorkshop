@@ -1,0 +1,47 @@
+[ion_species_1]
+initial_density = 0.5
+initial_temperature = 1.0
+
+[neutral_species_1]
+initial_density = 0.5
+initial_temperature = 1.0
+
+[timestepping]
+nstep = 1000
+dt = 0.001
+nwrite = 10
+
+[reactions]
+charge_exchange_frequency = 0.01
+
+[z]
+ngrid = 9
+nelement = 2
+bc = "periodic"
+L = 1.0
+
+[vpa]
+ngrid = 17
+nelement = 8
+L = 12.0
+
+[vz]
+ngrid = 17
+nelement = 8
+L = 12.0
+
+[composition]
+T_e = 12.0
+
+[z_IC_ion_species_1]
+initialization_option = "sinusoid"
+density_amplitude = 0.001
+
+[z_IC_neutral_species_1]
+initialization_option = "sinusoid"
+density_amplitude = 0.001
+
+[evolve_moments]
+density = true
+parallel_flow = true
+pressure = true
