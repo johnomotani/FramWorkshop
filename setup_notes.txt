@@ -1,3 +1,17 @@
+On Windows: Download the worksheet pdf at https://github.com/johnomotani/FramWorkshop/blob/wsl/NumericalPhysicsWorksheet.pdf onto the Desktop.
 sudo apt install git python-is-python3 python3-numpy python3-matplotlib python3-h5py kate
 pip install --user animatplot
 git clone https://github.com/mabarnes/moment_kinetics.git
+
+On Linux:
+git clone -b linux https://github.com/johnomotani/FramWorkshop.git
+cp FramWorkshop/NumericalPhysicsWorksheet.pdf Desktop/
+
+On WSL:
+git clone -b wsl https://github.com/johnomotani/FramWorkshop.git
+
+On both:
+curl -fsSL https://install.julialang.org | sh --default-channel 1.11
+cd moment_kinetics
+machines/machine_setup.sh
+<Choose the default option to all the prompts, except where it asks if you want to install makie_post_processing, where we can say 'n' because we won't use the moment_kinetics post-processing for this workshop>
