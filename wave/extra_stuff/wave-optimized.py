@@ -77,6 +77,8 @@ def animate_results(time, grid, d, timesteps_per_frame):
     plt.ylim(d_min, d_max)
     timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
     anim = amp.Animation(blocks, timeline, fig=fig)
+    plt.xlabel("x")
+    plt.ylabel("d")
     anim.controls()
     plt.show()
     return
@@ -107,6 +109,8 @@ def animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame):
     plt.legend(loc="lower right")
     timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
     anim = amp.Animation(blocks, timeline)
+    plt.xlabel("x")
+    plt.ylabel("d")
     anim.controls()
     plt.show()
     return
