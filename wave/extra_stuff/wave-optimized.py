@@ -75,10 +75,10 @@ def animate_results(time, grid, d, timesteps_per_frame):
     d_max += extra_space
     d_min = np.min(d[::timesteps_per_frame,:]) - extra_space
     plt.ylim(d_min, d_max)
-    timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
-    anim = amp.Animation(blocks, timeline, fig=fig)
     plt.xlabel("x")
     plt.ylabel("d")
+    timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
+    anim = amp.Animation(blocks, timeline, fig=fig)
     anim.controls()
     plt.show()
     return
@@ -93,24 +93,24 @@ def animate_results_with_error(time, grid, d, exact_d, timesteps_per_frame):
 
     blocks = [amp.blocks.Line(grid, d[::timesteps_per_frame,:], label="d", ax=ax1)]
     blocks.append(amp.blocks.Line(grid, exact_d[::timesteps_per_frame,:], label="exact_d", ax=ax1))
-    ax1.legend(loc="lower right")
-
-    error = d[::timesteps_per_frame,:] - exact_d[::timesteps_per_frame,:]
-    blocks.append(amp.blocks.Line(grid, error, label="error", ax=ax2))
-
+    ax1.xlabel("x")
+    ax1.ylabel("d")
     d_max = np.max(d[::timesteps_per_frame,:])
     extra_space = 0.1 * d_max
     d_max += extra_space
     d_min = np.min(d[::timesteps_per_frame,:]) - extra_space
     ax1.set_ylim(d_min, d_max)
+    ax1.legend(loc="lower right")
 
+    error = d[::timesteps_per_frame,:] - exact_d[::timesteps_per_frame,:]
+    blocks.append(amp.blocks.Line(grid, error, label="error", ax=ax2))
     error_max = 1.1 * np.max(np.abs(error))
     ax2.set_ylim(-error_max, error_max)
+    ax2.xlabel("x")
+    ax2.ylabel("d - exact_d")
 
     timeline = amp.Timeline(time[::timesteps_per_frame], fps=60)
     anim = amp.Animation(blocks, timeline)
-    plt.xlabel("x")
-    plt.ylabel("d")
     anim.controls()
     plt.show()
     return
