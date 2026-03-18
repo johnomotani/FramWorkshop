@@ -1,8 +1,8 @@
-import animatplot as amp
+import sys
+import numpy as np
 import h5py
 from matplotlib import pyplot as plt
-import numpy as np
-import sys
+import animatplot as amp
 
 def load_moment_kinetics_output(data_path):
     with h5py.File(data_path, "r") as dataset:

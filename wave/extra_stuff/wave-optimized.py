@@ -1,6 +1,6 @@
 import numpy as np
-import animatplot as amp
 from matplotlib import pyplot as plt
+import animatplot as amp
 
 def simulate_wave(wave_speed, timestep_size, n_gridpoints):
     # Length of the string.
