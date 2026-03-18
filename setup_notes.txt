@@ -1,2 +1,2 @@
-sudo apt install git python-is-python3 python3-numpy python3-matplotlib
+sudo apt install git python-is-python3 python3-numpy python3-matplotlib python3-h5py
 pip install --user animatplot
