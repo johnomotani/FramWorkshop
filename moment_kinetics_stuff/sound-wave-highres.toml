@@ -18,7 +18,6 @@ charge_exchange_frequency = 0.01
 [z]
 ngrid = 9
 nelement = 16
-#nelement_local = 2
 bc = "periodic"
 L = 1.0
 
