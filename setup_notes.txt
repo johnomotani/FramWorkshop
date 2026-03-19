@@ -32,6 +32,9 @@ machines/machine_setup.sh
 <Choose the default option to all the prompts>
 bin/julia --project -O3 precompile.jl
 rm -r performance-tests plot_comparison.jl plots_post_processing post_process_parameter_scan.jl precompile_dependencies.jl precompile-kinetic-electrons.jl precompile-makie-post-processing.jl precompile-no-run.jl precompile-plots-post-processing.jl precompile-with-check-bounds.jl profiling publication_inputs run_evolve_convergence_test.jl run_makie_post_processing.jl run_MMS_test.jl run_parameter_scan.jl run_post_processing.jl test_scripts
+echo "#!/bin/bash
+bin/julia -O3 --project -J moment_kinetics.so run_moment_kinetics.jl \$@" > run_moment_kinetics.sh
+chmod +x run_moment_kinetics.sh
 
 
 
