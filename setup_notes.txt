@@ -22,7 +22,7 @@ conda config --set changeps1 false
 mamba install animatplot
 git clone https://github.com/mabarnes/moment_kinetics.git
 # Something about our moment_kinetics setup on julia-1.12 makes printing to the terminal super slow. Install julia-1.11 instead as a work-around.
-curl -fsSL https://install.julialang.org | sh --default-channel 1.11
+curl -fsSL https://install.julialang.org | sh -s -- --default-channel 1.11
 cd moment_kinetics
 machines/machine_setup.sh
 <Choose the default option to all the prompts>
