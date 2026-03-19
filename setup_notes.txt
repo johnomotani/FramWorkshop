@@ -16,7 +16,7 @@ echo "Host archer
 " >> ~/.ssh/config
 sudo apt install kate
 curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-bash Miniforge3-$(uname)-$(uname -m).sh -b
+bash Miniforge3-$(uname)-$(uname -m).sh
 <accept the license and say 'yes' to all the prompts>
 conda config --set changeps1 false
 <open a new shell so conda environment is active, and close the old one>
