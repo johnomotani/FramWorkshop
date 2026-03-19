@@ -19,10 +19,13 @@ curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Mi
 bash Miniforge3-$(uname)-$(uname -m).sh -b
 <accept the license and say 'yes' to all the prompts>
 conda config --set changeps1 false
+<open a new shell so conda environment is active, and close the old one>
 mamba install animatplot
 git clone https://github.com/mabarnes/moment_kinetics.git
 # Something about our moment_kinetics setup on julia-1.12 makes printing to the terminal super slow. Install julia-1.11 instead as a work-around.
 curl -fsSL https://install.julialang.org | sh -s -- --default-channel 1.11
+<Accept the default response at the prompt>
+<open a new shell so julia is available, and close the old one>
 cd moment_kinetics
 machines/machine_setup.sh
 <Choose the default option to all the prompts>
