@@ -1,11 +1,6 @@
 On Windows: Download the worksheet pdf at https://github.com/johnomotani/FramWorkshop/blob/wsl/NumericalPhysicsWorksheet.pdf onto the Desktop.
-echo "Host archer
-    HostName login.archer2.ac.uk
-    User snewton
-" >> ~/.ssh/config
-sudo apt install git python-is-python3 python3-numpy python3-matplotlib python3-h5py kate
-pip install --user animatplot
-git clone https://github.com/mabarnes/moment_kinetics.git
+
+sudo apt install git
 
 On Linux:
 git clone -b linux https://github.com/johnomotani/FramWorkshop.git
@@ -15,6 +10,13 @@ On WSL:
 git clone -b wsl https://github.com/johnomotani/FramWorkshop.git
 
 On both:
+echo "Host archer
+    HostName login.archer2.ac.uk
+    User snewton
+" >> ~/.ssh/config
+sudo apt install git python-is-python3 python3-numpy python3-matplotlib python3-h5py kate
+pip install --user animatplot
+git clone https://github.com/mabarnes/moment_kinetics.git
 # Something about our moment_kinetics setup on julia-1.12 makes printing to the terminal super slow. Install julia-1.11 instead as a work-around.
 curl -fsSL https://install.julialang.org | sh --default-channel 1.11
 cd moment_kinetics
